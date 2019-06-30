@@ -1,6 +1,9 @@
-var express = requre("express");
-var logger = require("logger");
+var express = require("express");
+var logger = require("morgan");
 var mongoose = require("mongoose");
+
+var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
+mongoose.connect(mongoDB_URI);
 
 // Our scraping tools
 // Axios is a promised-based http library, similar to jQuery's Ajax method
@@ -14,7 +17,7 @@ var db = require("./models");
 
 var PORT = 3000;
 
-//Initilaize Express
+//Initialize Express
 var app = express();
 
 //Configure the morgan middleware
@@ -42,18 +45,19 @@ axios.get("https://www.newsguardtech.com/press/").then(function(response) {
 //Load to cheerio and save to $ selector
 var $ = cheerio.load(response.data);
 //Now we need to grab the title reference for each article
-$("").each(function(i, element) {
+$(".pub-date").each(function(i, element) {
+    console.log(element)
 //save empty result object
 var result = {};
 
 //Add summary text and the href of every link
 
-result.title = $(this)
-    .children("")
+result.title = $(this)//For this website the title will be the link text minus the link attribute
+    .children("a")
     .text();
 
 result.link = $(this)
-    .children("")
+    .children("a")
     .attr("href");
 
 //Create a new article  using the "result" object built via scraping
@@ -64,7 +68,7 @@ db.Article.create(result)
     })
     .catch(function(err) {
     //If there is an error, log it also
-    console.log(err);    
+    // console.log(err);    
     });
 });
 

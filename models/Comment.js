@@ -1,8 +1,8 @@
 var mongoose = require("mongoose");
 
-var schema = mongoose.Schema;
+var Schema = mongoose.Schema;
 
-var CommentSchema = new SChema({
+var CommentSchema = new Schema({
 
     title: String,
 
