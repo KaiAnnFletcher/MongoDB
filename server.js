@@ -35,7 +35,7 @@ app.use(express.json());
 app.use(express.static("public"));
 
 //Using mongoose connect to the MongoDB
-mongoose.connect("mongodb://localhost/NewsGuard", {useNewUrlParser: true});
+mongoose.connect(MONGODB_URI, {useNewUrlParser: true});
 
 //Now to configure the routes
 
