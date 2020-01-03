@@ -1,11 +1,12 @@
 var express = require("express");
+const router = require("express").Router();
 var logger = require("morgan");
 var mongoose = require("mongoose");
 
-var MONGODB_URI = process.env.MONGODB_URI || "mongodb://kaiann.fletcher@mail.utoronto.ca:JoyPhi48*@ds345587.mlab.com:45587/heroku_r87w3qr6";
-mongoose.connect(MONGODB_URI);
+var MONGODB_URI = process.env.MONGODB_URI || "mongodb://kaiann.fletcher%40mail.utoronto.ca:JoyPhi48*@ds345587.mlab.com:45587/heroku_r87w3qr6";
+//mongoose.connect(MONGODB_URI);
 
-// Our scraping tools
+// Our scraping tools                                                                                                                                                                                                                                                                                          ````````````````````````````````````````````````````````````````````      
 // Axios is a promised-based http library, similar to jQuery's Ajax method
 // It works on the client and on the server
 
@@ -24,7 +25,7 @@ var app = express();
 //The morgan logger will be used for logging requests 
 //using the dev format
 //Concise output colored by response status for development use. 
-//The :status token will be colored red for server error codes, yellow for client error codes, cyan for redirection codes, and uncolored for all other codes.
+//The status token will be colored red for server error codes, yellow for client error codes, cyan for redirection codes, and uncolored for all other codes.
 
 app.use(logger("dev"));
 
@@ -35,15 +36,39 @@ app.use(express.json());
 app.use(express.static("public"));
 
 //Using mongoose connect to the MongoDB
-mongoose.connect(MONGODB_URI, {useNewUrlParser: true});
+const connect = async function () {
+    //const uri = combineDbURI();
+    //console.log(`Connecting to DB - uri: ${uri}`)
+    return mongoose.connect(MONGODB_URI, {useNewUrlParser: true});
+};
 
+//Call it with an async function using await
+
+(async () => {
+    try {
+        const connected = await connect();
+        console.log("connected");
+    } catch(e) {
+        console.log('Error happened while connecting to the DB: ', e.message)
+    }
+}) ();
+console.log("test");
 //Now to configure the routes
 
 app.get("/scrape", function(req, res) {
+    res.sendFile(path.join(__dirname, './views/index.handlebars'), function(err) {
+        if(err) {
+            res.status(500).send(err)
+        }
+    })
+})
+
+console.log("scraping all data");
 //Grab the html body with axios    
 axios.get("https://www.newsguardtech.com/press/").then(function(response) {
 //Load to cheerio and save to $ selector
 var $ = cheerio.load(response.data);
+
 //Now we need to grab the title reference for each article
 $(".pub-date").each(function(i, element) {
     console.log(element)
@@ -60,6 +85,18 @@ result.link = $(this)
     .children("a")
     .attr("href");
 
+    if (result.title !== '') {
+        result.linkid = result.link.match(/\d{4,6}/g)[0];
+        const promise = News
+        .findOneAndUpdate(result, result, {upsert:true, new:true})
+        promises.push(promise);
+        // .then(dbModel => output.push(dbModel));
+      }
+    });
+    Promise.all(promises).then((data) => {
+      res.json(data)
+    })
+
 //Create a new article  using the "result" object built via scraping
 db.Article.create(result)
     .then(function(dbArticle) {
@@ -73,14 +110,13 @@ db.Article.create(result)
 });
 
 //Send client message
-res.send("Scrape Complete");
-});
+//res.send("Scrape Complete");
 
-});
+
 
 //Now we need a route to save unique users to the db
 //Have a unique rule in the user schema which will prevent duplicate users
-db.User.create({name:""})
+db.User.create({})
     .then(function(dbUser) {
         console.log(dbUser);
     })
@@ -90,7 +126,7 @@ db.User.create({name:""})
 
 //Getting the articles that are now in the db
 
-app.get("/articles", function(req, res) {
+ app.get("/articles", function(req, res) {
 // Grab every document in the Articles collection
     db.Article.find({})
         .then(function(dbArticle){
