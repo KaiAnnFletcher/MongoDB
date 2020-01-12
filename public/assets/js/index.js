@@ -32,7 +32,7 @@ $(document).on("click", "p", function() {
         //A button to submit a new note, with the id of the article saved to it
         $("#notes").append("<button data-id='" + data._id + "' id='savenote'>Save Note</button>")
 
-        //If there si a note in the article
+        //If there is a note in the article
         if (data.note) {
             //Place the title of the note int he body title input
             $("#titleinput").val(data.note.title);
