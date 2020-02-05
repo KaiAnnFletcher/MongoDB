@@ -22,7 +22,7 @@ var PORT = 3000;
 
 //Initialize Express
 var app = express();
-var collections = ["scrapedData"];
+//var collections = ["scrapedData"];
 //Configure the morgan middleware
 //The morgan logger will be used for logging requests 
 //using the dev format
@@ -46,6 +46,10 @@ app.engine(
   );
   app.set("view engine", "handlebars");
 
+  // Routes
+require("./routes/apiRoutes")(app);
+require("./routes/htmlRoutes")(app);
+
 //Using mongoose connect to the MongoDB
 const connect = async function () {
     //const uri = combineDbURI();
@@ -66,10 +70,11 @@ const connect = async function () {
 console.log("test");
 //Now to configure the routes
 
-app.get("/", function(req, res) {
+app.get("/scrape", function(req, res) {
     res.render("index", function(err) {
         if(err) {
             res.status(500).send(err)
+            console.log("500 error");
         }
     });
 })

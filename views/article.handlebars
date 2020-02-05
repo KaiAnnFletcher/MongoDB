@@ -1,0 +1,25 @@
+<div id="home">
+<div class="container">
+
+        <div class="row">
+
+            <div class="col-sm-12 scroll">
+                <div class="card" style="height: 20rem">
+                    <h1 class="card-header text-center">NewsGuard!</h1>
+                    <div class="card-body text-center">
+                    <div class="row">
+
+                    <div class="col-sm-12" id="article-holder">
+                        <h4>{{#each title}}</h4>
+                        <p>{{#each summary}}</p>
+                        <a>{{#each link}}</a>
+                        <a>{{#each comment}}</a>
+
+                        <input type="submit">
+                        <a href="/comments">See your comments!</a>
+                        <a href="/user">See your profile!</a>
+                        <a href="/populateduser/:id">See your profile, populated with comments!</a>
+                        </form>
+                    </div>
+</div>
+</div>
