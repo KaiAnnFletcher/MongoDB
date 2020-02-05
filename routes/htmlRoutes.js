@@ -20,9 +20,9 @@ app.get("/populateduser/:id", function(req, res) {
 
 //Load comments page
 app.get("/comments", function(req, res) {
-    db.Comment.findAll({}).then(function(dbArticles) {
+    db.Comment.find({}).then(function(dbComment) {
         res.render("comment", {
-            comments:dbComments
+            comments:dbComment
         });
     })
 });
